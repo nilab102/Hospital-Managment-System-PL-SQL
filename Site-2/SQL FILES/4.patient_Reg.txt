@@ -1,0 +1,66 @@
+set serveroutput on;
+DECLARE
+   p_id NUMBER(10);
+   p_id_pc NUMBER(10);
+   p_id_site1 NUMBER(10);
+   p_name VARCHAR2(50);
+   p_age NUMBER(3);
+   p_gender VARCHAR2(10);
+   p_email VARCHAR2(100);
+   p_phone VARCHAR2(20);
+   p_address VARCHAR2(200);
+   p_branch_id NUMBER(10);
+   p_password VARCHAR2(100);
+   l_exception EXCEPTION;
+BEGIN
+
+   SELECT MAX(patient_id) INTO p_id_pc
+   FROM patient_Table;
+
+   -- Get the maximum patient_id from Site1 database
+   SELECT MAX(patient_id) INTO p_id_site1
+   FROM patient_Table@site2;
+
+   -- Get the maximum of the two patient_id values
+   p_id := GREATEST(p_id_pc, p_id_site1);
+
+   p_name := '&patient_name';
+
+
+   p_age := &patient_age;
+
+   p_gender := '&patient_gender';
+
+
+   p_email := '&patient_email';
+
+
+   p_phone := '&patient_phone';
+
+
+   p_address := '&patient_address';
+   p_branch_id := &branch_id;
+
+   p_password := '&password';
+
+   IF p_branch_id = 2 THEN
+      INSERT INTO patient_Table (patient_id  , name, age, gender, email, phone, address, branch_id)
+      VALUES (p_id + 1 , p_name, p_age, p_gender, p_email, p_phone, p_address, p_branch_id);
+
+      INSERT INTO p_LOGIN_Table (patient_id, password)
+      VALUES (p_id + 1, p_password);
+   ELSIF p_branch_id = 1 THEN
+      INSERT INTO patient_Table@site2 (patient_id  , name, age, gender, email, phone, address, branch_id)
+      VALUES (p_id + 1 , p_name, p_age, p_gender, p_email, p_phone, p_address, p_branch_id);
+
+      INSERT INTO p_LOGIN_Table@site2(patient_id, password)
+      VALUES (p_id + 1, p_password);
+   ELSE
+      RAISE l_exception;
+   END IF;
+EXCEPTION
+   WHEN l_exception THEN
+      dbms_output.put_line('Invalid branch');
+
+END;
+/

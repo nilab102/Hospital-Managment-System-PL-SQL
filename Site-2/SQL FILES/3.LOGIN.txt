@@ -1,0 +1,28 @@
+set serveroutput on;
+DECLARE
+  l_id NUMBER;
+  l_password VARCHAR2(100);
+  l_is_doctor BOOLEAN;
+  l_is_patient BOOLEAN;
+BEGIN
+  -- Prompt the user to enter their ID and password
+	l_id:=&x;
+	l_password:=&y;
+  -- Check if the user is a doctor or a patient
+  l_is_doctor := Login.DoctorLogin(l_id, l_password);
+  IF l_is_doctor THEN
+    DBMS_OUTPUT.PUT_LINE('Welcome, doctor!');
+    UPDATE current_status SET status = 2;
+
+  ELSE
+    l_is_patient := Login.PatientLogin(l_id, l_password);
+    IF l_is_patient THEN
+      DBMS_OUTPUT.PUT_LINE('Welcome, patient!');
+	UPDATE current_status SET status = 1;
+
+    ELSE
+      DBMS_OUTPUT.PUT_LINE('Login failed. Incorrect ID or password.');
+    END IF;
+  END IF;
+END;
+/

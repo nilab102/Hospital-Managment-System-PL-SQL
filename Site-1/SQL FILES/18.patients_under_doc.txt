@@ -1,0 +1,35 @@
+DECLARE
+  doctor_id NUMBER(10) := &Enter_Doctor_ID;
+  v_status CURRENT_STATUS.STATUS%TYPE;
+BEGIN
+   -- get the value of STATUS from the CURRENT_STATUS table
+  SELECT STATUS INTO v_status FROM CURRENT_STATUS;
+  
+  -- check if the user is logged in (STATUS = 1)
+  IF v_status = 2 THEN
+  -- Print patients from the current site
+  FOR patient IN (SELECT p.patient_id, p.name, p.age, p.gender, p.email, p.phone, p.address 
+                  FROM patient_Table p
+                  INNER JOIN appointment_Table a ON p.patient_id = a.patient_id
+                  WHERE a.doctor_id = doctor_id AND a.branch_id = 1)
+  LOOP
+    DBMS_OUTPUT.PUT_LINE('Patient ID: ' || patient.patient_id || ', Name: ' || patient.name || ', Age: ' || patient.age || 
+                         ', Gender: ' || patient.gender || ', Email: ' || patient.email || ', Phone: ' || patient.phone || 
+                         ', Address: ' || patient.address || ', Branch ID: 1');
+  END LOOP;
+
+  -- Print patients from the site 1
+  FOR patient IN (SELECT p.patient_id, p.name, p.age, p.gender, p.email, p.phone, p.address 
+                  FROM patient_Table@site1 p
+                  INNER JOIN appointment_Table@site1 a ON p.patient_id = a.patient_id
+                  WHERE a.doctor_id = doctor_id AND a.branch_id = 2)
+  LOOP
+    DBMS_OUTPUT.PUT_LINE('Patient ID: ' || patient.patient_id || ', Name: ' || patient.name || ', Age: ' || patient.age || 
+                         ', Gender: ' || patient.gender || ', Email: ' || patient.email || ', Phone: ' || patient.phone || 
+                         ', Address: ' || patient.address || ', Branch ID: 2');
+  END LOOP;
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('User has no access.');
+  END IF;
+END;
+/

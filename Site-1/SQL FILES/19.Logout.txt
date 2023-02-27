@@ -1,0 +1,5 @@
+Begin
+UPDATE current_status SET status = 0;
+DBMS_OUTPUT.PUT_Line('log out........');
+end;
+/

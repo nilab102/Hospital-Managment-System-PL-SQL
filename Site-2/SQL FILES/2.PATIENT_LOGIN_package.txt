@@ -1,0 +1,50 @@
+CREATE OR REPLACE PACKAGE Login AS
+FUNCTION DoctorLogin (p_doctor_id IN NUMBER, p_password IN VARCHAR2) RETURN BOOLEAN;
+FUNCTION PatientLogin (p_patient_id IN NUMBER, p_password IN VARCHAR2) RETURN BOOLEAN;
+END Login;
+/
+
+CREATE OR REPLACE PACKAGE BODY Login AS
+FUNCTION DoctorLogin (p_doctor_id IN NUMBER, p_password IN VARCHAR2) RETURN BOOLEAN IS
+l_count INT;
+BEGIN
+SELECT COUNT(*)
+INTO l_count
+FROM (
+SELECT *
+FROM d_LOGIN_Table
+WHERE doctor_id = p_doctor_id AND password = p_password
+UNION
+SELECT *
+FROM d_LOGIN_Table@site2
+WHERE doctor_id = p_doctor_id AND password = p_password
+);
+IF l_count >= 1 THEN
+RETURN TRUE;
+ELSE
+RETURN FALSE;
+END IF;
+END DoctorLogin;
+
+FUNCTION PatientLogin (p_patient_id IN NUMBER, p_password IN VARCHAR2) RETURN BOOLEAN IS
+l_count int;
+BEGIN
+SELECT COUNT(*)
+INTO l_count
+FROM (
+SELECT *
+FROM p_LOGIN_Table
+WHERE patient_id = p_patient_id AND password = p_password
+UNION
+SELECT *
+FROM p_LOGIN_Table@site2
+WHERE patient_id = p_patient_id AND password = p_password
+);
+IF l_count >= 1 THEN
+RETURN TRUE;
+ELSE
+RETURN FALSE;
+END IF;
+END PatientLogin;
+END Login;
+/

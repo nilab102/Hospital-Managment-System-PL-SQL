@@ -1,0 +1,62 @@
+DECLARE
+  appointment_id NUMBER(10);
+  patient_id NUMBER(10);
+  doctor_id NUMBER(10);
+  diagnosis VARCHAR2(500);
+  medications VARCHAR2(1000);
+  branch_id NUMBER(10);
+  p_id NUMBER(10);
+  p_id1 NUMBER(10);
+  p_id2 NUMBER(10);
+ v_status CURRENT_STATUS.STATUS%TYPE;
+  
+BEGIN
+ 
+SELECT STATUS INTO v_status FROM CURRENT_STATUS;
+  
+  -- check if the user is logged in (STATUS = 1)
+  IF v_status = 2 THEN
+  -- Get input values from user
+  appointment_id := &Enter_Appointment_ID;
+  patient_id := &Enter_Patient_ID;
+  doctor_id := &Enter_Doctor_ID;
+  diagnosis := '&Enter_Diagnosis';
+  medications := '&Enter_Medications';
+  branch_id := &Enter_Branch_ID;
+
+  -- Get the next prescription ID
+
+   SELECT MAX(prescription_id) INTO p_id1
+   FROM prescription_Table;
+
+
+   SELECT MAX(prescription_id) INTO p_id2
+   FROM prescription_Table@site1;
+
+   -- Get the maximum of the two patient_id values
+   p_id := GREATEST(p_id1, p_id2);
+
+
+  -- Insert data into the appropriate table based on the branch_id
+  IF branch_id = 1 THEN
+    -- Insert into current pc table
+    INSERT INTO prescription_Table (prescription_id, appointment_id, patient_id, doctor_id, diagnosis, medications, branch_id)
+    VALUES (p_id, appointment_id, patient_id, doctor_id, diagnosis, medications, branch_id);
+    DBMS_OUTPUT.PUT_LINE('Prescription added to current pc table.');
+  ELSIF branch_id = 2 THEN
+    -- Insert into site 1 table
+    INSERT INTO prescription_Table@site1 (prescription_id, appointment_id, patient_id, doctor_id, diagnosis, medications, branch_id)
+    VALUES (p_id +1 , appointment_id, patient_id, doctor_id, diagnosis, medications, branch_id);
+    DBMS_OUTPUT.PUT_LINE('Prescription added to site 1 table.');
+  ELSE
+    -- Throw an exception for invalid branch_id
+    RAISE_APPLICATION_ERROR(-20001, 'Invalid branch ID.');
+  END IF;
+
+  COMMIT;
+ ELSE
+ DBMS_OUTPUT.PUT_LINE('User has no access.');
+ END IF;
+
+END;
+/

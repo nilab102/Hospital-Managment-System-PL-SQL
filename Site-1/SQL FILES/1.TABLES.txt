@@ -1,0 +1,116 @@
+drop table admin_Table;
+drop table doctor_Table;
+drop table patient_Table;
+drop table appointment_Table;
+drop table prescription_Table;
+drop table p_LOGIN_Table;
+drop table d_LOGIN_Table;
+drop table current_status;
+
+CREATE TABLE current_status (
+  status NUMBER
+);
+
+
+
+CREATE TABLE admin_Table (
+  admin_id NUMBER(10) PRIMARY KEY,
+  name VARCHAR2(50),
+  email VARCHAR2(100),
+  password VARCHAR2(100),
+  role VARCHAR2(50),
+  branch_id NUMBER(10)
+);
+
+CREATE TABLE doctor_Table (
+  doctor_id NUMBER(10) PRIMARY KEY,
+  name VARCHAR2(50),
+  specialty VARCHAR2(100),
+  email VARCHAR2(100),
+  phone VARCHAR2(20),
+  address VARCHAR2(200),
+  branch_id NUMBER(10)
+);
+
+CREATE TABLE patient_Table (
+  patient_id NUMBER(10) PRIMARY KEY,
+  name VARCHAR2(50),
+  age NUMBER(3),
+  gender VARCHAR2(10),
+  email VARCHAR2(100),
+  phone VARCHAR2(20),
+  address VARCHAR2(200),
+  branch_id NUMBER(10)
+);
+
+
+
+CREATE TABLE d_LOGIN_Table (
+doctor_id NUMBER(10) REFERENCES doctor_Table (doctor_id) PRIMARY KEY,
+password VARCHAR2(100)
+);
+CREATE TABLE p_LOGIN_Table (
+  patient_id NUMBER(10) REFERENCES patient_Table (patient_id) PRIMARY KEY,
+  password VARCHAR2(100)
+);
+
+CREATE TABLE appointment_Table (
+  appointment_id NUMBER(10) PRIMARY KEY,
+  patient_id NUMBER(10),
+  doctor_id NUMBER(10),
+  I_date DATE,
+  time VARCHAR2(10),
+  status VARCHAR2(20),
+  branch_id NUMBER(10)
+);
+
+CREATE TABLE prescription_Table (
+  prescription_id NUMBER(10) PRIMARY KEY,
+  appointment_id NUMBER(10) ,
+  patient_id NUMBER(10),
+  doctor_id NUMBER(10),
+  diagnosis VARCHAR2(500),
+  medications VARCHAR2(1000),
+  branch_id NUMBER(10)
+);
+
+INSERT INTO admin_Table (admin_id, name, email, password, role, branch_id)
+VALUES (1, 'John Doe', 'johndoe@example.com', 'password1', 'Super Admin', 1);
+
+INSERT INTO admin_Table (admin_id, name, email, password, role, branch_id)
+VALUES (2, 'Jane Doe', 'janedoe@example.com', 'password2', 'Branch Admin', 2);
+
+INSERT INTO doctor_Table (doctor_id, name, specialty, email, phone, address, branch_id)
+VALUES (1, 'Dr. Smith', 'Pediatrics', 'drsmith@example.com', '555-555-5555', '123 Main St', 1);
+
+INSERT INTO doctor_Table (doctor_id, name, specialty, email, phone, address, branch_id)
+VALUES (2, 'Dr. Jones', 'Surgery', 'drjones@example.com', '555-555-5556', '456 Main St', 2);
+
+INSERT INTO patient_Table (patient_id, name, age, gender, email, phone, address, branch_id)
+VALUES (1, 'Alice Smith', 25, 'Female', 'alicesmith@example.com', '555-555-5557', '789 Main St', 1);
+
+INSERT INTO patient_Table (patient_id, name, age, gender, email, phone, address, branch_id)
+VALUES (2, 'Bob Jones', 30, 'Male', 'bobjones@example.com', '555-555-5558', '999 Main St', 2);
+
+INSERT INTO appointment_Table (appointment_id, patient_id, doctor_id, I_date, time, status, branch_id)
+VALUES (1, 1, 1, to_date('2023-02-05', 'YYYY-MM-DD'), '10:00 AM', 'Scheduled', 1);
+
+INSERT INTO appointment_Table (appointment_id, patient_id, doctor_id, I_date, time, status, branch_id)
+VALUES (2, 2, 2, to_date('2023-02-06', 'YYYY-MM-DD'), '11:00 AM', 'Scheduled', 2);
+
+INSERT INTO prescription_Table (prescription_id, appointment_id, patient_id, doctor_id, diagnosis, medications, branch_id)
+VALUES (1, 1, 1, 1, 'Flu', 'Aspirin, Tylenol', 1);
+
+INSERT INTO prescription_Table (prescription_id, appointment_id, patient_id, doctor_id, diagnosis, medications, branch_id)
+VALUES (2, 2, 2, 2, 'Broken Arm', 'Painkillers, Cast', 2);
+
+INSERT INTO d_LOGIN_Table VALUES (1, '12345');
+
+INSERT INTO d_LOGIN_Table VALUES (2, '1234');
+
+INSERT INTO  p_LOGIN_Table VALUES (1, '123');
+
+INSERT INTO  p_LOGIN_Table VALUES (2, '12');
+
+INSERT INTO current_status (status) VALUES (0);
+

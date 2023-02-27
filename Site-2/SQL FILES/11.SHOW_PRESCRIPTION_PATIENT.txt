@@ -1,0 +1,37 @@
+DECLARE
+  v_patient_id NUMBER(10);
+  v_status CURRENT_STATUS.STATUS%TYPE;
+BEGIN
+   -- get the value of STATUS from the CURRENT_STATUS table
+  SELECT STATUS INTO v_status FROM CURRENT_STATUS;
+  
+  -- check if the user is logged in (STATUS = 1)
+  IF v_status = 1 THEN
+  -- Get patient ID from user
+  v_patient_id := &Enter_Patient_ID;
+  
+  -- Query prescriptions for the patient from both sites
+  FOR presc IN (
+    SELECT prescription_id, appointment_id, patient_id, doctor_id, diagnosis, medications, branch_id
+    FROM prescription_Table
+    WHERE patient_id = v_patient_id
+    UNION ALL
+    SELECT prescription_id, appointment_id, patient_id, doctor_id, diagnosis, medications, branch_id
+    FROM prescription_Table@site2
+    WHERE patient_id = v_patient_id
+  ) LOOP
+    -- Display prescription information
+    DBMS_OUTPUT.PUT_LINE('Prescription ID: ' || presc.prescription_id);
+    DBMS_OUTPUT.PUT_LINE('Appointment ID: ' || presc.appointment_id);
+    DBMS_OUTPUT.PUT_LINE('Patient ID: ' || presc.patient_id);
+    DBMS_OUTPUT.PUT_LINE('Doctor ID: ' || presc.doctor_id);
+    DBMS_OUTPUT.PUT_LINE('Diagnosis: ' || presc.diagnosis);
+    DBMS_OUTPUT.PUT_LINE('Medications: ' || presc.medications);
+    DBMS_OUTPUT.PUT_LINE('Branch ID: ' || presc.branch_id);
+    DBMS_OUTPUT.PUT_LINE('-----------------------------');
+  END LOOP;
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('User has no access.');
+  END IF;
+END;
+/

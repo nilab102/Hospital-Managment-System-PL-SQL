@@ -1,0 +1,33 @@
+DECLARE
+  CURSOR c_prescriptions IS
+    SELECT prescription_id, appointment_id, patient_id, doctor_id, diagnosis, medications, branch_id
+    FROM prescription_Table
+    UNION ALL
+    SELECT prescription_id, appointment_id, patient_id, doctor_id, diagnosis, medications, branch_id
+    FROM prescription_Table@site2;
+  
+  v_prescription_id prescription_Table.prescription_id%TYPE;
+  v_appointment_id prescription_Table.appointment_id%TYPE;
+  v_patient_id prescription_Table.patient_id%TYPE;
+  v_doctor_id prescription_Table.doctor_id%TYPE;
+  v_diagnosis prescription_Table.diagnosis%TYPE;
+  v_medications prescription_Table.medications%TYPE;
+  v_branch_id prescription_Table.branch_id%TYPE;
+BEGIN
+  -- Print column headers
+  DBMS_OUTPUT.PUT_LINE('PRESCRIPTION_ID' || CHR(9) || 'APPOINTMENT_ID' || CHR(9) || 'PATIENT_ID' || CHR(9) || 'DOCTOR_ID' || CHR(9) || 'DIAGNOSIS' || CHR(9) || 'MEDICATIONS' || CHR(9) || 'BRANCH_ID');
+  
+  -- Loop through the cursor and print each row
+  FOR prescription_rec IN c_prescriptions LOOP
+    v_prescription_id := prescription_rec.prescription_id;
+    v_appointment_id := prescription_rec.appointment_id;
+    v_patient_id := prescription_rec.patient_id;
+    v_doctor_id := prescription_rec.doctor_id;
+    v_diagnosis := prescription_rec.diagnosis;
+    v_medications := prescription_rec.medications;
+    v_branch_id := prescription_rec.branch_id;
+    
+    DBMS_OUTPUT.PUT_LINE(v_prescription_id || CHR(9) || v_appointment_id || CHR(9) || v_patient_id || CHR(9) || v_doctor_id || CHR(9) || v_diagnosis || CHR(9) || v_medications || CHR(9) || v_branch_id);
+  END LOOP;
+END;
+/

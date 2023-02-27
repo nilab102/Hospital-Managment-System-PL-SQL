@@ -1,0 +1,7 @@
+create or replace trigger current_status_trigger
+After Update OF status ON current_status
+for each row 
+begin
+DBMS_OUTPUT.PUT_LINE('Login staus Updated');
+end;
+/

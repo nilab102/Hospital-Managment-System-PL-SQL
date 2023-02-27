@@ -1,0 +1,34 @@
+SET SERVEROUTPUT ON;
+DECLARE
+  CURSOR doctor_cur IS
+    SELECT doctor_id, name, specialty, email, phone, address, branch_id
+    FROM doctor_Table
+    UNION
+    SELECT doctor_id, name, specialty, email, phone, address, branch_id
+    FROM doctor_Table@site2;
+  v_doctor_id doctor_Table.doctor_id%TYPE;
+  v_name doctor_Table.name%TYPE;
+  v_specialty doctor_Table.specialty%TYPE;
+  v_email doctor_Table.email%TYPE;
+  v_phone doctor_Table.phone%TYPE;
+  v_address doctor_Table.address%TYPE;
+  v_branch_id doctor_Table.branch_id%TYPE;
+  v_current_status current_status.status%TYPE;
+BEGIN
+  SELECT status INTO v_current_status FROM current_status;
+  IF v_current_status = 1 THEN
+    DBMS_OUTPUT.PUT_LINE('Doctor List:');
+    DBMS_OUTPUT.PUT_LINE('ID  Name  Specialty  Email  Phone  Address  Branch ID');
+    DBMS_OUTPUT.PUT_LINE('--  ----  --------  -----  -----  -------  --------');
+    OPEN doctor_cur;
+    LOOP
+      FETCH doctor_cur INTO v_doctor_id, v_name, v_specialty, v_email, v_phone, v_address, v_branch_id;
+      EXIT WHEN doctor_cur%NOTFOUND;
+      DBMS_OUTPUT.PUT_LINE(v_doctor_id || '  ' || v_name || '  ' || v_specialty || '  ' || v_email || '  ' || v_phone || '  ' || v_address || '  ' || v_branch_id);
+    END LOOP;
+    CLOSE doctor_cur;
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('User has no access.');
+  END IF;
+END;
+/

@@ -1,0 +1,19 @@
+DECLARE
+  CURSOR all_appointments IS
+    SELECT appointment_id, patient_id, doctor_id, I_date, time, status, branch_id
+    FROM appointment_Table
+    UNION ALL
+    SELECT appointment_id, patient_id, doctor_id, I_date, time, status, branch_id
+    FROM appointment_Table@site2;
+BEGIN
+  -- Output column headers
+  DBMS_OUTPUT.PUT_LINE('Appointment ID | Patient ID | Doctor ID | Appointment Date | Time | Status | Branch ID');
+  DBMS_OUTPUT.PUT_LINE('---------------------------------------------------------------------------');
+  
+  -- Loop through all appointments and output each row
+  FOR apt IN all_appointments LOOP
+    DBMS_OUTPUT.PUT_LINE(apt.appointment_id || ' | ' || apt.patient_id || ' | ' || apt.doctor_id || ' | ' ||
+                         apt.I_date || ' | ' || apt.time || ' | ' || apt.status || ' | ' || apt.branch_id);
+  END LOOP;
+END;
+/

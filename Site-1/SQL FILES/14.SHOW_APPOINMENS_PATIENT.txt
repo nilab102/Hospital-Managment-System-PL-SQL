@@ -1,0 +1,27 @@
+DECLARE
+  patient_id NUMBER(10);
+v_status CURRENT_STATUS.STATUS%TYPE;
+BEGIN
+   -- get the value of STATUS from the CURRENT_STATUS table
+  SELECT STATUS INTO v_status FROM CURRENT_STATUS;
+  
+  -- check if the user is logged in (STATUS = 1)
+  IF v_status = 1 THEN
+  -- Get input value from user
+  patient_id := &Enter_Patient_ID;
+
+  -- Show all the appointments for the patient from site 1
+  DBMS_OUTPUT.PUT_LINE('Appointments for Patient ID ' || patient_id || ' from Sites');
+  FOR appt IN (SELECT * FROM appointment_Table WHERE patient_id = patient_id) LOOP
+    DBMS_OUTPUT.PUT_LINE(appt.appointment_id || ' - ' || appt.doctor_id || ' - ' || appt.I_date || ' - ' || appt.time || ' - ' || appt.status);
+  END LOOP;
+
+  -- Show all the appointments for the patient from site 2
+  FOR appt IN (SELECT * FROM appointment_Table@site1 WHERE patient_id = patient_id) LOOP
+    DBMS_OUTPUT.PUT_LINE(appt.appointment_id || ' - ' || appt.doctor_id || ' - ' || appt.I_date || ' - ' || appt.time || ' - ' || appt.status);
+  END LOOP;
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('User has no access.');
+  END IF;
+END;
+/

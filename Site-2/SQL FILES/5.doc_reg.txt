@@ -1,0 +1,57 @@
+SET SERVEROUTPUT ON;
+DECLARE
+v_doctor_id NUMBER(10);
+v_doctor_id_1 NUMBER(10);
+v_doctor_id_2 NUMBER(10);
+v_name VARCHAR2(50);
+v_specialty VARCHAR2(100);
+v_email VARCHAR2(100);
+v_phone VARCHAR2(20);
+v_address VARCHAR2(200);
+v_branch_id NUMBER(10);
+v_password VARCHAR2(100);
+v_error_message VARCHAR2(200);
+BEGIN
+-- Take input from user
+   SELECT MAX(doctor_id) INTO v_doctor_id_1
+   FROM doctor_Table;
+
+
+   SELECT MAX(doctor_id) INTO v_doctor_id_2
+   FROM doctor_Table@site2;
+
+   -- Get the maximum of the two patient_id values
+   v_doctor_id := GREATEST(v_doctor_id_1, v_doctor_id_2);
+
+v_name := '&name';
+v_specialty := '&specialty';
+v_email := '&email';
+v_phone := '&phone';
+v_address := '&address';
+v_branch_id := &branch_id;
+v_password := '&password';
+
+-- Insert into doctor_Table based on branch_id
+IF v_branch_id = 2 THEN
+INSERT INTO doctor_Table (doctor_id, name, specialty, email, phone, address, branch_id)
+VALUES (v_doctor_id + 1, v_name, v_specialty, v_email, v_phone, v_address, v_branch_id);
+-- Insert into d_LOGIN_Table
+INSERT INTO d_LOGIN_Table (doctor_id, password)
+VALUES (v_doctor_id + 1, v_password);
+ELSIF v_branch_id = 1 THEN
+INSERT INTO doctor_Table@site2 (doctor_id, name, specialty, email, phone, address, branch_id)
+VALUES (v_doctor_id + 1, v_name, v_specialty, v_email, v_phone, v_address, v_branch_id);
+-- Insert into d_LOGIN_Table
+INSERT INTO d_LOGIN_Table@site2 (doctor_id, password)
+VALUES (v_doctor_id + 1, v_password);
+ELSE
+v_error_message := 'Invalid branch';
+RAISE_APPLICATION_ERROR(-20001, v_error_message);
+END IF;
+END;
+/
+
+
+
+
+

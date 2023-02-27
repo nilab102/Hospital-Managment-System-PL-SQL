@@ -1,0 +1,50 @@
+CREATE OR REPLACE PACKAGE appointment_pkg AS
+  
+  PROCEDURE book_appointment(p_patient_id IN NUMBER, p_doctor_id IN NUMBER, p_date IN DATE, p_time IN VARCHAR2, p_branch_id IN NUMBER);
+  
+  PROCEDURE cancel_appointment(p_appointment_id IN NUMBER);
+  
+END appointment_pkg;
+/
+
+CREATE OR REPLACE PACKAGE BODY appointment_pkg AS
+  
+  PROCEDURE book_appointment(p_patient_id IN NUMBER, p_doctor_id IN NUMBER, p_date IN DATE, p_time IN VARCHAR2, p_branch_id IN NUMBER) AS
+    v_appointment_id NUMBER;
+    v_appointment_id1 NUMBER;
+    v_appointment_id2 NUMBER;
+  BEGIN
+    -- generate a unique appointment ID
+   SELECT MAX(appointment_id) INTO v_appointment_id1
+   FROM appointment_Table;
+
+
+   SELECT MAX(appointment_id) INTO v_appointment_id2
+   FROM appointment_Table@site1;
+
+   -- Get the maximum of the two patient_id values
+   v_appointment_id := GREATEST(v_appointment_id1, v_appointment_id2);
+    
+    -- insert appointment data into the appropriate table based on branch ID
+    IF p_branch_id = 1 THEN
+      INSERT INTO appointment_Table(appointment_id, patient_id, doctor_id, I_date, time, status, branch_id)
+      VALUES(v_appointment_id +1 , p_patient_id, p_doctor_id, p_date, p_time, 'Booked', p_branch_id);
+    ELSIF p_branch_id = 2 THEN
+      INSERT INTO appointment_Table@site1(appointment_id, patient_id, doctor_id, I_date, time, status, branch_id)
+      VALUES(v_appointment_id +1 , p_patient_id, p_doctor_id, p_date, p_time, 'Booked', p_branch_id);
+    END IF;
+    
+    DBMS_OUTPUT.PUT_LINE('Appointment ' || v_appointment_id || ' booked successfully.');
+  END book_appointment;
+  
+  PROCEDURE cancel_appointment(p_appointment_id IN NUMBER) AS
+  BEGIN
+    -- update appointment status to cancelled
+    UPDATE appointment_Table SET status = 'Cancelled' WHERE appointment_id = p_appointment_id;
+    UPDATE appointment_Table@site1 SET status = 'Cancelled' WHERE appointment_id = p_appointment_id;
+    
+    DBMS_OUTPUT.PUT_LINE('Appointment ' || p_appointment_id || ' cancelled successfully.');
+  END cancel_appointment;
+  
+END appointment_pkg;
+/

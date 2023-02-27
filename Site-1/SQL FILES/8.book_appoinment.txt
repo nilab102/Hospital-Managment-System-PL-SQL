@@ -1,0 +1,39 @@
+DECLARE
+  v_patient_id NUMBER;
+  v_doctor_id NUMBER;
+  v_appointment_date DATE;
+  v_appointment_time VARCHAR2(10);
+  v_branch_id NUMBER;
+   v_status CURRENT_STATUS.STATUS%TYPE;
+BEGIN
+ 
+   -- get the value of STATUS from the CURRENT_STATUS table
+  SELECT STATUS INTO v_status FROM CURRENT_STATUS;
+  
+  -- check if the user is logged in (STATUS = 1)
+  IF v_status = 1 THEN
+
+  -- get user input for appointment data
+  DBMS_OUTPUT.PUT_LINE('Enter patient ID:');
+  v_patient_id := &patient_id;
+  
+  DBMS_OUTPUT.PUT_LINE('Enter doctor ID:');
+  v_doctor_id := &doctor_id;
+  
+  DBMS_OUTPUT.PUT_LINE('Enter appointment date (format: DD-MON-YYYY):');
+  v_appointment_date := TO_DATE('&appointment_date', 'DD-MON-YYYY');
+  
+  DBMS_OUTPUT.PUT_LINE('Enter appointment time (format: HH:MI AM/PM):');
+  v_appointment_time := '&appointment_time';
+  
+  DBMS_OUTPUT.PUT_LINE('Enter branch ID:');
+  v_branch_id := &branch_id;
+  
+  -- book the appointment using the appointment_pkg.book_appointment procedure
+  appointment_pkg.book_appointment(v_patient_id, v_doctor_id, v_appointment_date, v_appointment_time, v_branch_id);
+
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('User has no access.');
+  END IF;
+END;
+/

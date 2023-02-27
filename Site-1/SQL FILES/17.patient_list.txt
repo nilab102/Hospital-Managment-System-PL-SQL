@@ -1,0 +1,14 @@
+DECLARE
+  CURSOR patients_cur IS
+    SELECT patient_id, name, age, gender, email, phone, address
+    FROM patient_Table
+    UNION
+    SELECT patient_id, name, age, gender, email, phone, address
+    FROM patient_Table@site1;
+BEGIN
+  DBMS_OUTPUT.PUT_LINE('List of patients from both sites:');
+  FOR patient_rec IN patients_cur LOOP
+    DBMS_OUTPUT.PUT_LINE('Patient ID: ' || patient_rec.patient_id || ', Name: ' || patient_rec.name || ', Age: ' || patient_rec.age || ', Gender: ' || patient_rec.gender || ', Email: ' || patient_rec.email || ', Phone: ' || patient_rec.phone || ', Address: ' || patient_rec.address);
+  END LOOP;
+END;
+/

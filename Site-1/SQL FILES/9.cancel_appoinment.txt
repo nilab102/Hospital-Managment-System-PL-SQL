@@ -1,0 +1,19 @@
+DECLARE
+  v_appointment_id NUMBER; 
+  v_status CURRENT_STATUS.STATUS%TYPE;
+BEGIN
+
+SELECT STATUS INTO v_status FROM CURRENT_STATUS;
+  
+  -- check if the user is logged in (STATUS = 1)
+  IF v_status = 1 THEN
+  -- get appointment ID from user input
+  v_appointment_id := &appointment_id;
+
+  -- call cancel_appointment procedure
+  appointment_pkg.cancel_appointment(v_appointment_id);
+ ELSE
+    DBMS_OUTPUT.PUT_LINE('User has no access.');
+  END IF;
+END;
+/
